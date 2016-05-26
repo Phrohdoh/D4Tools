@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{7D13B48E-B333-4290-8060-C6D16688B0D4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>D4Tools.SymbolTableBuilder</RootNamespace>
+    <AssemblyName>SymbolTableBuilder</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="DGrok.Framework">
+      <HintPath>..\thirdparty\DGrok.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ISymbol.cs" />
+    <Compile Include="ModKind.cs" />
+    <Compile Include="SymbolTableBuilder.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_MethodHeading.cs" />
+    <Compile Include="SymbolTypes\LocalSymbol.cs" />
+    <Compile Include="SymbolTypes\MethodSymbol.cs" />
+    <Compile Include="SymbolTypes\ParameterSymbol.cs" />
+    <Compile Include="SymbolTypes\UnitSymbol.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_Unit.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_VarSection.cs" />
+    <Compile Include="SymbolTypes\VarSymbol.cs" />
+    <Compile Include="SymbolTypes\FieldSymbol.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SymbolTableBuilderParts\" />
+    <Folder Include="SymbolTypes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestFiles\d4classes.pas" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
