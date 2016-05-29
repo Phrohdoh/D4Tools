@@ -11,9 +11,9 @@
 
 		/* TODO
 		Location DefinitionLocation { get; }
-        void Accept(SymbolVisitor visitor);
-        string ToDisplayString();
-        */
+		void Accept(SymbolVisitor visitor);
+		string ToDisplayString();
+		*/
 	}
 
 	public enum SymbolKind : byte
