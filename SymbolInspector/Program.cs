@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using DGrok.Framework;
 
-namespace D4Tools.SymbolTableBuilder
+namespace D4Tools.SymbolInspector
 {
 	public class Program
 	{
 		static void ShowUsage() =>
-			Console.WriteLine("SymbolTableBuilder <your-unit.pas>");
+			Console.WriteLine("SymbolInspector <your-unit.pas>");
 
 		public static void Main(string[] args)
 		{
@@ -31,22 +29,9 @@ namespace D4Tools.SymbolTableBuilder
 				Environment.Exit(1);
 			}
 
-			var parser = Parser.FromText(text, filename, CompilerDefines.CreateStandard(), new FileLoader());
-			AstNode rootNode = null;
+			// TODO: Resolve this ugly namespacing.
+			var symbolTable = SymbolTableBuilder.SymbolTableBuilder.Create(text, filename);
 
-			try
-			{
-				rootNode = parser.ParseRule(RuleType.Goal);
-			}
-			catch (ParseException ex)
-			{
-				Console.WriteLine(ex.Message);
-				Environment.Exit(2);
-			}
-
-			Debug.Assert(rootNode != null);
-
-			var symbolTable = SymbolTableBuilder.Create(rootNode);
 			foreach (var unitName in symbolTable.UnitSymbols.Keys)
 			{
 				var unitSymbol = symbolTable.UnitSymbols[unitName];

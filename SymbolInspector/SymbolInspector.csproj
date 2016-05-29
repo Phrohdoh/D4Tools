@@ -3,16 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{7D13B48E-B333-4290-8060-C6D16688B0D4}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>D4Tools.SymbolTableBuilder</RootNamespace>
-    <AssemblyName>SymbolTableBuilder</AssemblyName>
+    <ProjectGuid>{2EFC74F6-7336-49B6-AA12-E0B563599D56}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SymbolInspector</RootNamespace>
+    <AssemblyName>SymbolInspector</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -32,30 +32,14 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ISymbol.cs" />
-    <Compile Include="ModKind.cs" />
-    <Compile Include="SymbolTableBuilder.cs" />
-    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_MethodHeading.cs" />
-    <Compile Include="SymbolTypes\MethodSymbol.cs" />
-    <Compile Include="SymbolTypes\ParameterSymbol.cs" />
-    <Compile Include="SymbolTypes\UnitSymbol.cs" />
-    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_Unit.cs" />
-    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_VarSection.cs" />
-    <Compile Include="SymbolTypes\VarSymbol.cs" />
-    <Compile Include="SymbolTypes\FieldSymbol.cs" />
-    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_UnitSection.cs" />
-    <Compile Include="SymbolTypes\UnitSectionSymbol.cs" />
-    <Compile Include="SymbolTypes\UsesClauseSymbol.cs" />
-    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_UsesClause.cs" />
-    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_MethodImplementation.cs" />
-    <Compile Include="SymbolTypes\ModKindSymbol.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SymbolTableBuilderParts\" />
-    <Folder Include="SymbolTypes\" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\SymbolTableBuilder\SymbolTableBuilder.csproj">
+      <Project>{7D13B48E-B333-4290-8060-C6D16688B0D4}</Project>
+      <Name>SymbolTableBuilder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\dgrok\Source\DGrok.Framework\DGrok.Framework.csproj">
       <Project>{DFB43477-AB65-4108-B880-928816A347E4}</Project>
       <Name>DGrok.Framework</Name>

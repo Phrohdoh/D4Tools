@@ -1,10 +1,6 @@
 ﻿namespace D4Tools.SymbolTableBuilder
 {
-	public interface INamedSymbol : ISymbol
-	{
-		string Name { get; }
-	}
-
+	// TODO: Move symbol types to `D4Tools.Symbols` namespace.
 	public interface ISymbol
 	{
 		SymbolKind SymbolKind { get; }
@@ -26,5 +22,10 @@
 		VariableDeclaration,
 		UnitInterfaceSection,
 		UnitImplementationSection,
+	}
+
+	public interface INamedSymbol : ISymbol
+	{
+		string Name { get; }
 	}
 }
