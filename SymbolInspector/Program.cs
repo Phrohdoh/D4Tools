@@ -1,5 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace D4Tools.SymbolInspector
 {
@@ -35,28 +42,42 @@ namespace D4Tools.SymbolInspector
 			foreach (var unitName in symbolTable.UnitSymbols.Keys)
 			{
 				var unitSymbol = symbolTable.UnitSymbols[unitName];
+				var hasInterface = unitSymbol.HasInterfaceSection;
 
-				foreach (var methodDecl in unitSymbol.GetMethodDeclarations())
+				var comp = SyntaxFactory.CompilationUnit();
+				comp = comp.AddUsings(SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System")));
+
+				if (hasInterface && unitSymbol.InterfaceSectionSymbol.HasUsesClause)
 				{
-					Console.WriteLine($">> {methodDecl.Name} (decl)");
+					var usingDirectives = new List<UsingDirectiveSyntax>();
+					foreach (var uses in unitSymbol.InterfaceSectionSymbol.UsesClauseSymbol.GetUnitNames())
+						usingDirectives.Add(SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(uses)));
 
-					Console.WriteLine($"Param count: {methodDecl.ParameterCount} (has Parameters? {methodDecl.HasParameters})");
-					foreach (var parameter in methodDecl.Parameters)
-						Console.WriteLine($"{parameter.Name}: {parameter.Type} (optional? {parameter.IsOptional})");
+					comp = comp.AddUsings(usingDirectives.ToArray());
 				}
 
-				foreach (var methodImpl in unitSymbol.GetMethodImplementations())
-				{
-					Console.WriteLine($">> {methodImpl.Name} (impl)");
+				var namespaceBlock = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName("WhatsInANamespace"));
 
-					Console.WriteLine($"Param count: {methodImpl.ParameterCount} (has Parameters? {methodImpl.HasParameters})");
-					foreach (var parameter in methodImpl.Parameters)
-						Console.WriteLine($"{parameter.Name}: {(parameter.HasType ? parameter.Type : "<none>")} (optional? {parameter.IsOptional})");
+				var staticClassDecl = SyntaxFactory.ClassDeclaration(unitSymbol.Name).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+				if (hasInterface && unitSymbol.InterfaceSectionSymbol.HasLocalSymbols)
+					foreach (var local in unitSymbol.InterfaceSectionSymbol.LocalSymbols.Where(l => l.HasType))
+						staticClassDecl = staticClassDecl.AddMembers(local.ToFieldDeclaration());
 
-					Console.WriteLine($"Local count: {methodImpl.LocalCount} (has Locals? {methodImpl.HasLocals})");
-					foreach (var local in methodImpl.Locals)
-						Console.WriteLine($"{local.Name}: {local.Type}");
-				}
+				foreach (var methodDecl in unitSymbol.GetMethodImplementations())
+					staticClassDecl = staticClassDecl.AddMembers(SyntaxFactory.MethodDeclaration(
+						SyntaxFactory.ParseTypeName(methodDecl.IsProcedure ? "void" : methodDecl.ReturnType),
+						methodDecl.Name).WithBody(SyntaxFactory.Block()));
+
+				namespaceBlock = namespaceBlock.AddMembers(staticClassDecl);
+				comp = comp.AddMembers(namespaceBlock);
+
+				var syntaxNode = Formatter.Format(comp, new AdhocWorkspace());
+				var sb = new StringBuilder();
+
+				using (var writer = new StringWriter(sb))
+					syntaxNode.WriteTo(writer);
+
+				Console.WriteLine(sb.ToString());
 			}
 		}
 	}
