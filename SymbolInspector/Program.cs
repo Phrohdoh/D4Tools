@@ -69,10 +69,8 @@ namespace D4Tools.SymbolInspector
 					foreach (var local in unitSymbol.InterfaceSectionSymbol.LocalSymbols.Where(l => l.HasType))
 						staticClassDecl = staticClassDecl.AddMembers(local.ToFieldDeclaration());
 
-				foreach (var methodDecl in unitSymbol.GetMethodImplementations())
-					staticClassDecl = staticClassDecl.AddMembers(SyntaxFactory.MethodDeclaration(
-						SyntaxFactory.ParseTypeName(methodDecl.IsProcedure ? "void" : methodDecl.ReturnType),
-						methodDecl.Name).WithBody(SyntaxFactory.Block()));
+				foreach (var methodImpl in unitSymbol.GetMethodImplementations())
+					staticClassDecl = staticClassDecl.AddMembers(methodImpl.ToMethodDeclaration());
 
 				namespaceBlock = namespaceBlock.AddMembers(staticClassDecl);
 				comp = comp.AddMembers(namespaceBlock);
