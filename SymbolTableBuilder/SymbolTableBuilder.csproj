@@ -41,7 +41,6 @@
     <Compile Include="ModKind.cs" />
     <Compile Include="SymbolTableBuilder.cs" />
     <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_MethodHeading.cs" />
-    <Compile Include="SymbolTypes\LocalSymbol.cs" />
     <Compile Include="SymbolTypes\MethodSymbol.cs" />
     <Compile Include="SymbolTypes\ParameterSymbol.cs" />
     <Compile Include="SymbolTypes\UnitSymbol.cs" />
@@ -49,13 +48,16 @@
     <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_VarSection.cs" />
     <Compile Include="SymbolTypes\VarSymbol.cs" />
     <Compile Include="SymbolTypes\FieldSymbol.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_UnitSection.cs" />
+    <Compile Include="SymbolTypes\UnitSectionSymbol.cs" />
+    <Compile Include="SymbolTypes\UsesClauseSymbol.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_UsesClause.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_MethodImplementation.cs" />
+    <Compile Include="SymbolTypes\ModKindSymbol.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SymbolTableBuilderParts\" />
     <Folder Include="SymbolTypes\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TestFiles\d4classes.pas" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

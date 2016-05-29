@@ -1,20 +1,22 @@
-﻿using System;
-namespace D4Tools.SymbolTableBuilder
+﻿namespace D4Tools.SymbolTableBuilder
 {
-	public class FieldSymbol : IVarSymbol
+	/// <summary>
+	/// Represents a variable (or const) that is 'local' to a method or a unit.
+	/// </summary>
+	public class LocalSymbol : IVariableSymbol, IModKindSymbol
 	{
-		public FieldSymbol(string name)
+		public string Name { get; internal set; }
+		public LocalSymbol(string name)
 		{
 			Name = name;
 		}
 
 		public ModKind ModKind { get; }
 
-		public string Name { get; internal set; }
+		public SymbolKind SymbolKind => SymbolKind.Local;
+
 
 		public string Type { get; internal set; }
-
-		public UnitSymbol ContainingUnit;
-		public bool HasContainingUnit => ContainingUnit != null;
+		public bool HasType => !string.IsNullOrWhiteSpace(Type);
 	}
 }

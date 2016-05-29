@@ -3,6 +3,7 @@ namespace D4Tools.SymbolTableBuilder
 	public interface IMethodSymbol : ISymbol
 	{
 		string ReturnType { get; }
+		string MethodType { get; }
 		bool IsProcedure { get; }
 		ParameterSymbol[] Parameters { get; }
 		int ParameterCount { get; }
@@ -12,6 +13,7 @@ namespace D4Tools.SymbolTableBuilder
 	public class MethodDeclarationSymbol : IMethodSymbol
 	{
 		public string Name { get; internal set; }
+		public string MethodType { get; internal set; }
 
 		/// <summary>
 		/// Returns `MethodImplementation` of the type `SymbolKind`.
@@ -40,6 +42,7 @@ namespace D4Tools.SymbolTableBuilder
 	public class MethodImplementationSymbol : IMethodSymbol
 	{
 		public string Name { get; internal set; }
+		public string MethodType { get; internal set; }
 
 		/// <summary>
 		/// Returns `MethodImplementation` of the type `SymbolKind`.
@@ -59,7 +62,7 @@ namespace D4Tools.SymbolTableBuilder
 		public bool HasParameters => ParameterCount != 0;
 
 		/// <summary>
-		/// An array of locals declared in the `VarDeclSection`.
+		/// An array of local fields declared in the `VarDeclSection`.
 		/// </summary>
 		public LocalSymbol[] Locals { get; internal set; } = new LocalSymbol[0];
 		public int LocalCount => Locals?.Length ?? 0;

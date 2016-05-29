@@ -1,10 +1,22 @@
-﻿using System;
-namespace D4Tools.SymbolTableBuilder
+﻿namespace D4Tools.SymbolTableBuilder
 {
-	public interface IVarSymbol
+	public interface IVariableSymbol : INamedSymbol
 	{
-		string Name { get; }
 		string Type { get; }
-		ModKind ModKind { get; }
+		bool HasType { get; }
+	}
+
+	public class VariableDeclarationSymbol : IVariableSymbol
+	{
+		public string Type { get; internal set; }
+		public bool HasType => !string.IsNullOrWhiteSpace(Type);
+
+		public SymbolKind SymbolKind => SymbolKind.VariableDeclaration;
+
+		public string Name { get; internal set; }
+		public VariableDeclarationSymbol(string name)
+		{
+			Name = name;
+		}
 	}
 }

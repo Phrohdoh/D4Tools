@@ -3,3 +3,7 @@
 *.userprefs
 obj
 bin
+
+# FPC output files
+*.o
+*.ppu

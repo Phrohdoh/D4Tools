@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using DGrok.DelphiNodes;
 using DGrok.Framework;
 
@@ -9,25 +8,10 @@ namespace D4Tools.SymbolTableBuilder
 {
 	public partial class SymbolTableBuilder
 	{
-		void OnVisitVarSectionForUnit(VarSectionNode node)
+		LocalSymbol[] ResolveVariables(VarSectionNode node)
 		{
-			var parentUnitNode = node.ParentNodeOfType<UnitNode>();
-			Debug.Assert(parentUnitNode != null);
-		}
-
-		public override void VisitVarSectionNode(VarSectionNode node)
-		{
-			var parentMethodImplNode = node.ParentNodeOfType<MethodImplementationNode>();
-			if (parentMethodImplNode == null)
-			{
-				OnVisitVarSectionForUnit(node);
-				return;
-			}
-
-			var methodName = parentMethodImplNode.MethodHeadingNode.NameNode.ToCode();
-
 			var idents = new List<string>();
-			var localSymbols = new List<LocalSymbol>();
+			var ret = new List<LocalSymbol>();
 
 			var lastParamType = "";
 
@@ -45,25 +29,46 @@ namespace D4Tools.SymbolTableBuilder
 				}
 
 				foreach (var ident in idents)
-					localSymbols.Add(new LocalSymbol(ident)
-					{
-						Type = lastParamType,
-					});
+					ret.Add(new LocalSymbol(ident) { Type = lastParamType });
 
 				idents.Clear();
 				lastParamType = "";
 			}
 
-			var localArr = localSymbols.ToArray();
+			return ret.ToArray();
+		}
 
-			MethodImplementationSymbol methodImplSymbol;
-			if (CurrentUnitSymbol.MethodImplementationsByName.TryGetValue(methodName, out methodImplSymbol))
-				methodImplSymbol.Locals = localArr;
-			else // TODO: This should actually be an error, how did we get to the var section without visiting the method heading?
+		void CustomVisitVarSectionNodeInInterfaceSection(VarSectionNode node, UnitSectionNode interfaceNode)
+		{
+			Debug.Assert(interfaceNode != null);
+			Debug.Assert(CurrentUnitSymbol != null);
+			Debug.Assert(CurrentUnitSymbol.HasInterfaceSection);
+
+			// TODO: Stop trashing previously-declared variables.
+			CurrentUnitSymbol.InterfaceSectionSymbol.LocalSymbols = ResolveVariables(node);
+		}
+
+		public override void VisitVarSectionNode(VarSectionNode node)
+		{
+			var parentMethodImplNode = node.ParentNodeOfType<MethodImplementationNode>();
+			if (parentMethodImplNode == null)
+				CustomVisitVarSectionNodeInInterfaceSection(node, node.ParentNodeOfType<UnitSectionNode>());
+			else
 			{
-				methodImplSymbol = new MethodImplementationSymbol(methodName) { Locals = localArr };
-				CurrentUnitSymbol.MethodImplementationsByName.Add(methodName, methodImplSymbol);
+				var methodName = parentMethodImplNode.MethodHeadingNode.NameNode.ToCode();
+				var variables = ResolveVariables(node);
+
+				MethodImplementationSymbol methodImplSymbol;
+				if (CurrentUnitSymbol.MethodImplementationsByName.TryGetValue(methodName, out methodImplSymbol))
+					methodImplSymbol.Locals = variables;
+				else // TODO: This should actually be an error, how did we get to the var section without visiting the method heading?
+				{
+					methodImplSymbol = new MethodImplementationSymbol(methodName) { Locals = variables };
+					CurrentUnitSymbol.MethodImplementationsByName.Add(methodName, methodImplSymbol);
+				}
 			}
+
+			base.VisitVarSectionNode(node);
 		}
 	}
 }

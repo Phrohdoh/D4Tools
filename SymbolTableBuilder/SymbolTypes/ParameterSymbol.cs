@@ -1,6 +1,6 @@
 namespace D4Tools.SymbolTableBuilder
 {
-	public class ParameterSymbol : IVarSymbol
+	public class ParameterSymbol : IVariableSymbol
 	{
 		public string Name { get; internal set; }
 
@@ -10,6 +10,7 @@ namespace D4Tools.SymbolTableBuilder
 		public SymbolKind SymbolKind => SymbolKind.Parameter;
 
 		public string Type { get; internal set; }
+		public bool HasType => Type != null;
 
 		public ModKind ModKind { get; internal set; }
 
@@ -36,5 +37,5 @@ namespace D4Tools.SymbolTableBuilder
 		{
 			Name = name;
 		}
-	}	
+	}
 }

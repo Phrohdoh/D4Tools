@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using DGrok.DelphiNodes;
 using DGrok.Framework;
@@ -9,19 +8,11 @@ namespace D4Tools.SymbolTableBuilder
 {
 	public partial class SymbolTableBuilder
 	{
-		public override void VisitMethodHeadingNode(MethodHeadingNode node)
+		List<ParameterSymbol> ResolveParameters(MethodHeadingNode node)
 		{
-			Debug.Assert(node != null);
-			Debug.Assert(node.NameNode != null);
-
-			// Note: This fails on some methods for reasons I have not figured out yet.
-			//Debug.Assert(node.NameNode is BinaryOperationNode);
-
-			var methodName = node.NameNode.ToCode();
-			var returnType = node.ReturnTypeNode?.ToCode();
+			var ret = new List<ParameterSymbol>();
 
 			var idents = new List<string>();
-			var parameterSymbols = new List<ParameterSymbol>();
 
 			ModKind? lastModKind = null;
 			var lastParamType = "";
@@ -29,16 +20,7 @@ namespace D4Tools.SymbolTableBuilder
 			// TODO: Parse single-param methods.
 			foreach (var paramItemNode in node.ParameterListNode.Items.Select(item => item.ItemNode))
 			{
-				//Debug.Assert(paramItemNode.TypeNode != null);
-				if (paramItemNode.TypeNode == null)
-				{
-					Console.WriteLine("Skipping untyped method param, we don't handle this yet.");
-					lastModKind = null;
-					lastParamType = "";
-					continue;
-				}
-
-				lastParamType = paramItemNode.TypeNode.ToCode();
+				lastParamType = paramItemNode.TypeNode?.ToCode();
 
 				foreach (var delimItem in paramItemNode.NameListNode?.Items)
 				{
@@ -53,13 +35,13 @@ namespace D4Tools.SymbolTableBuilder
 				{
 					case TokenType.VarKeyword:
 						lastModKind = ModKind.Var;
-						break;
+					break;
 					case TokenType.OutSemikeyword:
 						lastModKind = ModKind.Out;
-						break;
+					break;
 					case TokenType.ConstKeyword:
 						lastModKind = ModKind.Const;
-						break;
+					break;
 					/*
 					case null:
 						lastModKind = null;
@@ -67,15 +49,15 @@ namespace D4Tools.SymbolTableBuilder
 					*/
 					default:
 						lastModKind = ModKind.None;
-						break;
+					break;
 				}
 
 				foreach (var ident in idents)
-					parameterSymbols.Add(new ParameterSymbol(ident)
+					ret.Add(new ParameterSymbol(ident)
 					{
 						Type = lastParamType,
 						ModKind = lastModKind.Value,
-						Ordinal = parameterSymbols.Count,
+						Ordinal = ret.Count,
 						DefaultValue = paramItemNode.DefaultValueNode?.ToCode(),
 					});
 
@@ -84,27 +66,63 @@ namespace D4Tools.SymbolTableBuilder
 				lastParamType = "";
 			}
 
-			var paramArr = parameterSymbols.ToArray();
+			return ret;
+		}
 
-			// TODO:
-			//
-			// Do this much earlier.
-			// If `existingMethodSymbol` is valid then just update it instead of
-			// constructing a new MethodSymbol.
+		public enum MethodDeclOrImpl
+		{
+			Declaration,
+			Implementation
+		}
 
-			MethodImplementationSymbol methodImplSymbol;
-			if (CurrentUnitSymbol.MethodImplementationsByName.TryGetValue(methodName, out methodImplSymbol))
-				methodImplSymbol.Parameters = paramArr;
+		// We can guarantee this is a Declaration because `VisitMethodImplementationNode` does not visit the heading node.
+		public override void VisitMethodHeadingNode(MethodHeadingNode node) => CustomVisitMethodHeadingNode(node, MethodDeclOrImpl.Declaration);
+
+		public void CustomVisitMethodHeadingNode(MethodHeadingNode node, MethodDeclOrImpl declOrImpl)
+		{
+			var methodName = node.NameNode.ToCode();
+			var methodType = node.MethodTypeNode.Text;
+			var returnType = node.ReturnTypeNode?.ToCode();
+			var paramSymbols = ResolveParameters(node).ToArray();
+
+			if (declOrImpl == MethodDeclOrImpl.Declaration)
+			{
+				MethodDeclarationSymbol symbol;
+
+				if (CurrentUnitSymbol.MethodDeclarationsByName.TryGetValue(methodName, out symbol))
+					symbol.Parameters = paramSymbols.ToArray();
+				else
+				{
+					symbol = new MethodDeclarationSymbol(methodName)
+					{
+						Parameters = paramSymbols,
+						ReturnType = returnType,
+						MethodType = methodType,
+					};
+				}
+
+				CurrentUnitSymbol.MethodDeclarationsByName.Add(methodName, symbol);
+			}
 			else
 			{
-				methodImplSymbol = new MethodImplementationSymbol(methodName)
-				{
-					Parameters = paramArr,
-					ReturnType = returnType,
-				};
+				MethodImplementationSymbol symbol;
 
-				CurrentUnitSymbol.MethodImplementationsByName.Add(methodName, methodImplSymbol);
+				if (CurrentUnitSymbol.MethodImplementationsByName.TryGetValue(methodName, out symbol))
+					symbol.Parameters = paramSymbols;
+				else
+				{
+					symbol = new MethodImplementationSymbol(methodName)
+					{
+						Parameters = paramSymbols,
+						ReturnType = returnType,
+						MethodType = methodType,
+					};
+				}
+
+				CurrentUnitSymbol.MethodImplementationsByName.Add(methodName, symbol);
 			}
+
+			base.VisitMethodHeadingNode(node);
 		}
 	}
 }

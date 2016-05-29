@@ -1,11 +1,12 @@
-﻿using System;
-using DGrok.Framework;
-
-namespace D4Tools.SymbolTableBuilder
+﻿namespace D4Tools.SymbolTableBuilder
 {
-	public interface ISymbol
+	public interface INamedSymbol : ISymbol
 	{
 		string Name { get; }
+	}
+
+	public interface ISymbol
+	{
 		SymbolKind SymbolKind { get; }
 
 		/* TODO
@@ -22,6 +23,8 @@ namespace D4Tools.SymbolTableBuilder
 		MethodImplementation,
 		Parameter,
 		Unit,
-		UnitVarDecl,
+		VariableDeclaration,
+		UnitInterfaceSection,
+		UnitImplementationSection,
 	}
 }

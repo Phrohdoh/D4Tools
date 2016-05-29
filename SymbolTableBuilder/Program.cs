@@ -25,7 +25,7 @@ namespace D4Tools.SymbolTableBuilder
 			{
 				text = File.ReadAllText(filename);
 			}
-			catch (FileNotFoundException ex)
+			catch (Exception ex) when (ex is FileNotFoundException || ex is DirectoryNotFoundException)
 			{
 				Console.WriteLine(ex.Message);
 				Environment.Exit(1);
@@ -50,22 +50,27 @@ namespace D4Tools.SymbolTableBuilder
 			foreach (var unitName in symbolTable.UnitSymbols.Keys)
 			{
 				var unitSymbol = symbolTable.UnitSymbols[unitName];
-				Console.WriteLine($"Parsed unit {unitName} with {unitSymbol.MethodImplementationsByName.Count} Method Impls.");
+
+				foreach (var methodDecl in unitSymbol.GetMethodDeclarations())
+				{
+					Console.WriteLine($">> {methodDecl.Name} (decl)");
+
+					Console.WriteLine($"Param count: {methodDecl.ParameterCount} (has Parameters? {methodDecl.HasParameters})");
+					foreach (var parameter in methodDecl.Parameters)
+						Console.WriteLine($"{parameter.Name}: {parameter.Type} (optional? {parameter.IsOptional})");
+				}
 
 				foreach (var methodImpl in unitSymbol.GetMethodImplementations())
 				{
-					Console.WriteLine($">> {methodImpl.Name}");
+					Console.WriteLine($">> {methodImpl.Name} (impl)");
 
 					Console.WriteLine($"Param count: {methodImpl.ParameterCount} (has Parameters? {methodImpl.HasParameters})");
+					foreach (var parameter in methodImpl.Parameters)
+						Console.WriteLine($"{parameter.Name}: {(parameter.HasType ? parameter.Type : "<none>")} (optional? {parameter.IsOptional})");
+
 					Console.WriteLine($"Local count: {methodImpl.LocalCount} (has Locals? {methodImpl.HasLocals})");
-
-					if (methodImpl.ParameterCount != 0)
-						foreach (var parameter in methodImpl.Parameters)
-							Console.WriteLine($"{parameter.Name}: {parameter.Type} (optional? {parameter.IsOptional.ToString().ToLower()})");
-
-					if (methodImpl.LocalCount != 0)
-						foreach (var local in methodImpl.Locals)
-							Console.WriteLine($"{local.Name}: {local.Type}");
+					foreach (var local in methodImpl.Locals)
+						Console.WriteLine($"{local.Name}: {local.Type}");
 				}
 			}
 		}
