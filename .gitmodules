@@ -1,0 +1,3 @@
+[submodule "thirdparty/dgrok"]
+	path = thirdparty/dgrok
+	url = git@gitlab.com:Phrohdoh/dgrok.git

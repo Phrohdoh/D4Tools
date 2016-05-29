@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymbolTableBuilder", "SymbolTableBuilder\SymbolTableBuilder.csproj", "{7D13B48E-B333-4290-8060-C6D16688B0D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGrok.Framework", "..\dgrok\Source\DGrok.Framework\DGrok.Framework.csproj", "{DFB43477-AB65-4108-B880-928816A347E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,5 +15,9 @@ Global
 		{7D13B48E-B333-4290-8060-C6D16688B0D4}.Debug|x86.Build.0 = Debug|x86
 		{7D13B48E-B333-4290-8060-C6D16688B0D4}.Release|x86.ActiveCfg = Release|x86
 		{7D13B48E-B333-4290-8060-C6D16688B0D4}.Release|x86.Build.0 = Release|x86
+		{DFB43477-AB65-4108-B880-928816A347E4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DFB43477-AB65-4108-B880-928816A347E4}.Debug|x86.Build.0 = Debug|Any CPU
+		{DFB43477-AB65-4108-B880-928816A347E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{DFB43477-AB65-4108-B880-928816A347E4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
