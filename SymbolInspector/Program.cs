@@ -58,7 +58,13 @@ namespace D4Tools.SymbolInspector
 
 				var namespaceBlock = SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName("WhatsInANamespace"));
 
-				var staticClassDecl = SyntaxFactory.ClassDeclaration(unitSymbol.Name).WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+				var staticClassDecl = SyntaxFactory.ClassDeclaration(unitSymbol.Name)
+					.WithModifiers(SyntaxFactory.TokenList(
+						new[] {
+							SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+							SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+						}));
+
 				if (hasInterface && unitSymbol.InterfaceSectionSymbol.HasLocalSymbols)
 					foreach (var local in unitSymbol.InterfaceSectionSymbol.LocalSymbols.Where(l => l.HasType))
 						staticClassDecl = staticClassDecl.AddMembers(local.ToFieldDeclaration());
