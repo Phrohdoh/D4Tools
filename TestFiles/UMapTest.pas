@@ -18,7 +18,9 @@ unit UMapTest;
     type
       TMapTile = record
         TileType: word;
+        W,
         X, Y: byte;
+        procedure foo();
       end; // TMapTile
 
       TMap = class(TObject)
@@ -36,6 +38,8 @@ unit UMapTest;
         public
           function GetTileType(x: byte; y: byte): word;
       end; // TMap
+
+      TMyInteger = type Integer;
 
     var
       Map: TMap;

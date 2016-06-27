@@ -63,7 +63,7 @@ namespace D4Tools.SymbolTableBuilder
 					methodImplSymbol.Locals = variables;
 				else // TODO: This should actually be an error, how did we get to the var section without visiting the method heading?
 				{
-					methodImplSymbol = new MethodImplementationSymbol(methodName) { Locals = variables };
+					methodImplSymbol = new MethodImplementationSymbol(methodName, AccessabilityLevel.Unknown) { Locals = variables };
 					CurrentUnitSymbol.MethodImplementationsByName.Add(methodName, methodImplSymbol);
 				}
 			}

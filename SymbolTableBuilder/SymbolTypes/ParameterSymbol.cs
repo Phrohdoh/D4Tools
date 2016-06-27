@@ -7,7 +7,7 @@ namespace D4Tools.SymbolTableBuilder
 		/// <summary>
 		/// Returns `Parameter` of the type `SymbolKind`.
 		/// </summary>
-		public SymbolKind SymbolKind => SymbolKind.Parameter;
+		public SymbolKind SymbolKind => SymbolKind.MethodParameter;
 
 		public string Type { get; internal set; }
 		public bool HasType => Type != null;

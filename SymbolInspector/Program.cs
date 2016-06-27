@@ -38,10 +38,20 @@ namespace D4Tools.SymbolInspector
 
 			// TODO: Resolve this ugly namespacing.
 			var symbolTable = SymbolTableBuilder.SymbolTableBuilder.Create(text, filename);
-
+			return;
 			foreach (var unitName in symbolTable.UnitSymbols.Keys)
 			{
 				var unitSymbol = symbolTable.UnitSymbols[unitName];
+				var typeDecls = unitSymbol.GetTypeDeclarations();
+
+				foreach (var typeDecl in typeDecls)
+				{
+					Console.WriteLine($"{typeDecl.TypeDeclarationKind} '{typeDecl.Name}'");
+					foreach (var method in typeDecl.MethodDeclarationSymbols)
+						Console.WriteLine($"\t{method.AccessabilityLevel} {method.Name}");
+				}
+
+				/*
 				var hasInterface = unitSymbol.HasInterfaceSection;
 
 				var comp = SyntaxFactory.CompilationUnit();
@@ -82,6 +92,7 @@ namespace D4Tools.SymbolInspector
 					syntaxNode.WriteTo(writer);
 
 				Console.WriteLine(sb.ToString());
+				*/
 			}
 		}
 	}

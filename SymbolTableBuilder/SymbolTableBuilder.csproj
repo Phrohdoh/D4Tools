@@ -50,6 +50,9 @@
     <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_UsesClause.cs" />
     <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_MethodImplementation.cs" />
     <Compile Include="SymbolTypes\ModKindSymbol.cs" />
+    <Compile Include="SymbolTypes\TypeDeclarationSymbol.cs" />
+    <Compile Include="SymbolTableBuilderParts\SymbolTableBuilder_FieldSection.cs" />
+    <Compile Include="SymbolTypes\ArrayOfSymbol.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SymbolTableBuilderParts\" />

@@ -6,7 +6,7 @@ using DGrok.Framework;
 
 namespace D4Tools.SymbolTableBuilder
 {
-	public partial class SymbolTableBuilder
+	public partial class SymbolTableBuilder : Visitor
 	{
 		List<ParameterSymbol> ResolveParameters(MethodHeadingNode node)
 		{
@@ -69,60 +69,55 @@ namespace D4Tools.SymbolTableBuilder
 			return ret;
 		}
 
-		public enum MethodDeclOrImpl
-		{
-			Declaration,
-			Implementation
-		}
-
-		// We can guarantee this is a Declaration because `VisitMethodImplementationNode` does not visit the heading node.
-		public override void VisitMethodHeadingNode(MethodHeadingNode node) => CustomVisitMethodHeadingNode(node, MethodDeclOrImpl.Declaration);
-
-		public void CustomVisitMethodHeadingNode(MethodHeadingNode node, MethodDeclOrImpl declOrImpl)
+		public override void VisitMethodHeadingNode(MethodHeadingNode node)
 		{
 			var methodName = node.NameNode.ToCode();
 			var methodType = node.MethodTypeNode.Text;
 			var returnType = node.ReturnTypeNode?.ToCode();
 			var paramSymbols = ResolveParameters(node).ToArray();
+			var accessLevel = AccessabilityLevel.Unknown;
+			var parentAccessability = node.ParentNodeOfType<VisibilitySectionNode>();
 
-			if (declOrImpl == MethodDeclOrImpl.Declaration)
+			if (parentAccessability != null)
 			{
-				MethodDeclarationSymbol symbol;
-
-				if (CurrentUnitSymbol.MethodDeclarationsByName.TryGetValue(methodName, out symbol))
-					symbol.Parameters = paramSymbols.ToArray();
-				else
-				{
-					symbol = new MethodDeclarationSymbol(methodName)
-					{
-						Parameters = paramSymbols,
-						ReturnType = returnType,
-						MethodType = methodType,
-					};
-				}
-
-				CurrentUnitSymbol.MethodDeclarationsByName.Add(methodName, symbol);
-			}
-			else
-			{
-				MethodImplementationSymbol symbol;
-
-				if (CurrentUnitSymbol.MethodImplementationsByName.TryGetValue(methodName, out symbol))
-					symbol.Parameters = paramSymbols;
-				else
-				{
-					symbol = new MethodImplementationSymbol(methodName)
-					{
-						Parameters = paramSymbols,
-						ReturnType = returnType,
-						MethodType = methodType,
-					};
-				}
-
-				CurrentUnitSymbol.MethodImplementationsByName.Add(methodName, symbol);
+				var accessLevelText = parentAccessability?.VisibilityNode?.VisibilityKeywordNode?.Text;
+				if (string.IsNullOrWhiteSpace(accessLevelText))
+					Console.WriteLine($"Unknown accessability at {parentAccessability.Location}");
+				else if (!Enum.TryParse(accessLevelText, true, out accessLevel))
+					Console.WriteLine($"Cannot parse '{accessLevelText}' into an {nameof(AccessabilityLevel)} at {parentAccessability.Location}");
 			}
 
-			base.VisitMethodHeadingNode(node);
+			var methodDecl = new MethodDeclarationSymbol(methodName, accessLevel)
+			{
+				Parameters = paramSymbols,
+				ReturnType = returnType,
+				MethodType = methodType,
+			};
+
+			var parentTypeDecl = node.ParentNodeOfType<TypeDeclNode>();
+			if (parentTypeDecl != null)
+			{
+				var typeDeclName = parentTypeDecl.NameNode.Text;
+				if (typeDeclName.Contains("."))
+					typeDeclName = typeDeclName.Substring(typeDeclName.IndexOf('.'));
+
+				TypeDeclarationSymbol typeDecl;
+				if (!CurrentUnitSymbol.TryGetTypeDeclaration(typeDeclName, TypeDeclarationKind.Record, out typeDecl))
+				{
+					typeDecl = new TypeDeclarationSymbol(typeDeclName, TypeDeclarationKind.Record);
+					CurrentUnitSymbol.AddTypeDeclaration(typeDecl);
+				}
+
+				typeDecl.AddMethodDecl(methodDecl);
+				return;
+			}
+
+			var parentImplSection = node.ParentNodeOfType<UnitSectionNode>();
+			if (parentImplSection.HeaderKeywordNode.Text.ToLower() != "implementation")
+			{
+				// TODO: Handle this better.
+				throw new Exception("Type decls aren't allowed in the `implementation` section.");
+			}
 		}
 	}
 }

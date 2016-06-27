@@ -14,18 +14,37 @@
 
 	public enum SymbolKind : byte
 	{
-		Local,
+		UnitOrMethodLocal,
+		MethodParameter,
 		MethodDeclaration,
 		MethodImplementation,
-		Parameter,
-		Unit,
+		UnitDeclaration,
 		VariableDeclaration,
 		UnitInterfaceSection,
 		UnitImplementationSection,
+		TypeDeclaration,
+
+		ArrayOf,
 	}
 
 	public interface INamedSymbol : ISymbol
 	{
 		string Name { get; }
+	}
+
+	public enum AccessabilityLevel
+	{
+		Unknown,
+		Any,
+
+		Public,
+		Private,
+		Protected,
+		Published,
+	}
+
+	public interface IAccessabilityLevelSymbol
+	{
+		AccessabilityLevel AccessabilityLevel { get; }
 	}
 }

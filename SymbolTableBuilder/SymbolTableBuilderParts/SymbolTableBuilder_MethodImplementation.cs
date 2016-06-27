@@ -5,6 +5,7 @@ namespace D4Tools.SymbolTableBuilder
 {
 	public partial class SymbolTableBuilder : Visitor
 	{
+		/*
 		public override void VisitMethodImplementationNode(MethodImplementationNode node)
 		{
 			CustomVisitMethodHeadingNode(node.MethodHeadingNode, MethodDeclOrImpl.Implementation);
@@ -13,5 +14,6 @@ namespace D4Tools.SymbolTableBuilder
 			Visit(node.FancyBlockNode);
 			Visit(node.SemicolonNode);
 		}
+		*/
 	}
 }

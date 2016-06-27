@@ -1,6 +1,6 @@
 namespace D4Tools.SymbolTableBuilder
 {
-	public interface IMethodSymbol : ISymbol
+	public interface IMethodSymbol : INamedSymbol, IAccessabilityLevelSymbol
 	{
 		string ReturnType { get; }
 		string MethodType { get; }
@@ -14,6 +14,7 @@ namespace D4Tools.SymbolTableBuilder
 	{
 		public string Name { get; internal set; }
 		public string MethodType { get; internal set; }
+		public AccessabilityLevel AccessabilityLevel { get; internal set; }
 
 		/// <summary>
 		/// Returns `MethodImplementation` of the type `SymbolKind`.
@@ -33,9 +34,10 @@ namespace D4Tools.SymbolTableBuilder
 		public int ParameterCount => Parameters?.Length ?? 0;
 		public bool HasParameters => ParameterCount != 0;
 
-		public MethodDeclarationSymbol(string name)
+		public MethodDeclarationSymbol(string name, AccessabilityLevel accessability)
 		{
 			Name = name;
+			AccessabilityLevel = accessability;
 		}
 	}
 
@@ -43,6 +45,7 @@ namespace D4Tools.SymbolTableBuilder
 	{
 		public string Name { get; internal set; }
 		public string MethodType { get; internal set; }
+		public AccessabilityLevel AccessabilityLevel { get; internal set; }
 
 		/// <summary>
 		/// Returns `MethodImplementation` of the type `SymbolKind`.
@@ -84,9 +87,10 @@ namespace D4Tools.SymbolTableBuilder
 		public bool HasVarParameters => HasAnyParamsWithModKind(ModKind.Var);
 		public bool HasConstParameters => HasAnyParamsWithModKind(ModKind.Const);
 
-		public MethodImplementationSymbol(string name)
+		public MethodImplementationSymbol(string name, AccessabilityLevel accessability)
 		{
 			Name = name;
+			AccessabilityLevel = accessability;
 		}
 	}
 }
