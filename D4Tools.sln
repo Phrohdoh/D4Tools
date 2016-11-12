@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGrok.Framework", "..\dgrok
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymbolInspector", "SymbolInspector\SymbolInspector.csproj", "{2EFC74F6-7336-49B6-AA12-E0B563599D56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxFactoryDelphi", "SyntaxFactoryDelphi\SyntaxFactoryDelphi.csproj", "{9F98BE88-15EB-429B-A19F-23ED54B08DDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,5 +27,9 @@ Global
 		{2EFC74F6-7336-49B6-AA12-E0B563599D56}.Debug|x86.Build.0 = Debug|x86
 		{2EFC74F6-7336-49B6-AA12-E0B563599D56}.Release|x86.ActiveCfg = Release|x86
 		{2EFC74F6-7336-49B6-AA12-E0B563599D56}.Release|x86.Build.0 = Release|x86
+		{9F98BE88-15EB-429B-A19F-23ED54B08DDE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9F98BE88-15EB-429B-A19F-23ED54B08DDE}.Debug|x86.Build.0 = Debug|Any CPU
+		{9F98BE88-15EB-429B-A19F-23ED54B08DDE}.Release|x86.ActiveCfg = Release|Any CPU
+		{9F98BE88-15EB-429B-A19F-23ED54B08DDE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

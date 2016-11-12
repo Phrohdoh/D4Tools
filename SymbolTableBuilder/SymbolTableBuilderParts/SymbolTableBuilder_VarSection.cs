@@ -6,7 +6,7 @@ using DGrok.Framework;
 
 namespace D4Tools.SymbolTableBuilder
 {
-	public partial class SymbolTableBuilder
+	public partial class SymbolTableBuilder : Visitor
 	{
 		LocalSymbol[] ResolveVariables(VarSectionNode node)
 		{
